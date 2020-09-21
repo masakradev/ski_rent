@@ -6,3 +6,4 @@ config-*.py
 __pycache__/
 *$py.class
 *.crt
+/config.py
