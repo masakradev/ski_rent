@@ -5,8 +5,8 @@
     <h1 class="h2">Strona główna</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <button class="btn btn-sm btn-outline-secondary">Dodaj wypożyczenie</button>
-        <button class="btn btn-sm btn-outline-secondary">Oddanie wypożyczenia</button>
+        <a href="{{ url_for('dashboard.dodaj_wypozyczenie') }} " class="btn btn-sm btn-outline-secondary">Dodaj wypożyczenie</a>
+        <a href="{{ url_for('dashboard.oddanie_wypozyczenia') }} " class="btn btn-sm btn-outline-secondary">Oddanie wypożyczenia</a>
       </div>
     </div>
   </div>

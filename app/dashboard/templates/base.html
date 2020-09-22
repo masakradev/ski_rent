@@ -20,7 +20,7 @@
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">PamiSki</a>
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">PamirSki</a>
     </nav>
 
     <div class="container-fluid">
@@ -31,19 +31,37 @@
 
               <!-- MENU -->
               <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link {% if request.endpoint.startswith('dashboard.index') %} active {% endif %}" href="{{ url_for('dashboard.index')}}">
                   <span data-feather="home"></span>
-                  Dashboard <span class="sr-only">(current)</span>
+                  Dashboard {% if request.endpoint.startswith('dashboard.index') %} <span class="sr-only">(current)</span> {% endif %}
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="file"></span>
-                  Test
+                <a class="nav-link {% if request.endpoint.startswith('dashboard.dodaj') %} active {% endif %}" href="{{ url_for('dashboard.dodaj_wypozyczenie')}}">
+                  <span data-feather="plus"></span>
+                  Dodaj wypożyczenie {% if request.endpoint.startswith('dashboard.dodaj') %} <span class="sr-only">(current)</span> {% endif %}
                 </a>
               </li>
-
+              <li class="nav-item">
+                <a class="nav-link {% if request.endpoint.startswith('dashboard.oddanie') %} active {% endif %}" href="{{ url_for('dashboard.oddanie_wypozyczenia')}}">
+                  <span data-feather="minus"></span>
+                  Oddanie wypożyczenia {% if request.endpoint.startswith('dashboard.oddanie') %} <span class="sr-only">(current)</span> {% endif %}
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.endpoint.startswith('dashboard.wypozyczenia_lista_dzisiaj') %} active {% endif %}" href="{{ url_for('dashboard.wypozyczenia_lista_dzisiaj') }}">
+                  <span data-feather="list"></span>
+                  Lista wypożyczeń (dzisiaj) {% if request.endpoint.startswith('dashboard.wypozyczenia_lista_dzisiaj') %} <span class="sr-only">(current)</span> {% endif %}
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.endpoint.startswith('dashboard.wypozyczenia_lista_wszystkie') %} active {% endif %}" href="{{ url_for('dashboard.wypozyczenia_lista_wszystkie') }}">
+                  <span data-feather="list"></span>
+                  Lista wypożyczeń {% if request.endpoint.startswith('dashboard.wypozyczenia_lista_wszystkie') %} <span class="sr-only">(current)</span> {% endif %}
+                </a>
+              </li>
             </ul>
+            <hr>
           </div>
         </nav>
 
