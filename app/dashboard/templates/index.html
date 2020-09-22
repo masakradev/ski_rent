@@ -2,16 +2,85 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    <h1 class="h2">Dashboard</h1>
+    <h1 class="h2">Strona główna</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <button class="btn btn-sm btn-outline-secondary">Share</button>
-        <button class="btn btn-sm btn-outline-secondary">Export</button>
+        <button class="btn btn-sm btn-outline-secondary">Dodaj wypożyczenie</button>
+        <button class="btn btn-sm btn-outline-secondary">Oddanie wypożyczenia</button>
       </div>
-      <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
-        <span data-feather="calendar"></span>
-        This week
-      </button>
     </div>
   </div>
+
+      <!-- Top cards -->
+    <div class="row">
+        <div class="col-3">
+            <div class="card">
+              <div class="card-body">
+                  <div class="row align-items-center">
+                      <div class="col">
+                        <h6 class="text-uppercase text-muted mb-2">Wszystkie wypożyczenia</h6>
+                        <span class="h2 mb-0">
+                          0
+                        </span>
+                      </div>
+                      <div class="col-auto">
+                          <span style="margin-right: 20px" class="h2 fas fa-skiing text-muted mb-0"></span>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+              <div class="card-body">
+                  <div class="row align-items-center">
+                      <div class="col">
+                        <h6 class="text-uppercase text-muted mb-2">Wszystkie wypożyczenia</h6>
+                        <span class="h2 mb-0">
+                          0
+                        </span>
+                      </div>
+                      <div class="col-auto">
+                          <span style="margin-right: 20px" class="h2 fas fa-skiing text-muted mb-0"></span>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+              <div class="card-body">
+                  <div class="row align-items-center">
+                      <div class="col">
+                        <h6 class="text-uppercase text-muted mb-2">Wszystkie wypożyczenia</h6>
+                        <span class="h2 mb-0">
+                          0
+                        </span>
+                      </div>
+                      <div class="col-auto">
+                          <span style="margin-right: 20px" class="h2 fas fa-calendar-day text-muted mb-0"></span>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+              <div class="card-body">
+                  <div class="row align-items-center">
+                      <div class="col">
+                        <h6 class="text-uppercase text-muted mb-2">Dzisiaj do oddania</h6>
+                        <span class="h2 mb-0">
+                          0
+                        </span>
+                      </div>
+                      <div class="col-auto">
+                          <span style="margin-right: 20px" class="h2 fas fa-calendar-day text-muted mb-0"></span>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
