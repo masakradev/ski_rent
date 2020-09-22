@@ -61,7 +61,23 @@
                 </a>
               </li>
             </ul>
+
             <hr>
+
+            <!-- Admin Menu -->
+
+            <ul class="nav flex-column">
+              <!-- MENU -->
+              <li class="nav-item">
+                <p style="margin-bottom: 0;" class="nav-link">Administracja Systemem</p>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.endpoint.startswith('admin.cennik') %} active {% endif %}" href="{{ url_for('admin.cennik')}}">
+                  <span data-feather="home"></span>
+                  Cennik {% if request.endpoint.startswith('dashboard.index') %} <span class="sr-only">(current)</span> {% endif %}
+                </a>
+              </li>
+            </ul>
           </div>
         </nav>
 

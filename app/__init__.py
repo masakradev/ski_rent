@@ -9,3 +9,6 @@ app.register_blueprint(api_bp, url_prefix='/api')
 
 from app.dashboard import bp as dashboard_bp, routes
 app.register_blueprint(dashboard_bp)
+
+from app.admin import bp as admin_bp, routes
+app.register_blueprint(admin_bp, url_prefix='/admin')
