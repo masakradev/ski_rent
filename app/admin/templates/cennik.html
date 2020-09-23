@@ -5,11 +5,36 @@
     <h1 class="h2">Cennik</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <a href="{{ url_for('dashboard.dodaj_wypozyczenie') }} " class="btn btn-sm btn-outline-secondary">Dodaj nową pozycje</a>
+        <a href="{{ url_for('admin.cennik_dodaj') }} " class="btn btn-sm btn-outline-secondary">Dodaj nową pozycje</a>
       </div>
     </div>
   </div>
 
+<div class="row">
+{% for poz in pozycje %}
+    <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ poz.nazwa }}</h5>
+            <table class="table">
+                <tbody>
+                    <tr>
+                      <th>{{ poz.stage1 }}h</th>
+                      <td>{{ poz.price1 }}zł</td>
+                    </tr>
+                    <tr>
+                      <th>Więcej niż {{ poz.stage2 }}h</th>
+                      <td>{{ poz.price2 }}zł</td>
+                    </tr>
+
+                  </tbody>
+            </table>
+            <a href="{{ url_for('admin.cennik_edycja', id=poz.cennik_id)}}" class="btn btn-primary btn-sm">Edytuj</a>
+          </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
 
 
 {% endblock %}

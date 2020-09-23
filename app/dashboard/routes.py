@@ -1,6 +1,8 @@
 from flask import render_template, flash
 from app.dashboard import bp
 
+from app.db.database import *
+
 @bp.route('/')
 def index():
     return render_template('index.html')

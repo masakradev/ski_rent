@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ site_name }}</h1>
+  </div>
+
+<form method="POST">
+    {{ form.csrf_token }}
+    <div class="form-row">
+        <div class="form-group col-4">
+            {{ form.nazwa.label }}
+            {{ form.nazwa(class_="form-control") }}
+        </div>
+        <div class="form-group col-4">
+            {{ form.przedzial1.label }}
+            {{ form.przedzial1(class_="form-control") }}
+        </div>
+        <div class="form-group col-4">
+            {{ form.cena1.label }}
+            {{ form.cena1(class_="form-control") }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-4">
+        </div>
+        <div class="form-group col-4">
+            {{ form.przedzial2.label }}
+            {{ form.przedzial2(class_="form-control") }}
+        </div>
+        <div class="form-group col-4">
+            {{ form.cena2.label }}
+            {{ form.cena2(class_="form-control") }}
+        </div>
+    </div>
+
+    {{ form.submit }}
+</form>
+
+<div style="margin-top: 30px;" class="row">
+    <h4>Zasady przypisywania</h4>
+</div>
+<div class="row">
+    <p>Przedział <b>przedzial1</b> to ilość godzin za które klient zapłaci <b>Cena 1</b> <br>
+    Czyli gdy <b>przedział1</b> jest ustawione na 1 a <b>cena 1</b> na 10 to za każdą godzinę wypożyczenia jeżeli nie
+    trwa dłużej niż <b>przedział 2</b> poprostu <b>cene 1</b> razy ilość godzin</p>
+</div>
+<div class="row">
+    <p>Przedział <b>przedział2</b> to ilość godzin po których powyżej będzie kasowana cena <b>cena 2</b>.
+        W tym przypadku jeżeli ktoś bierzę sprzęt na dwa dni, liczona jest dwa razy <b>Cena 2</b> z przedziału <b>Przedział 2</b></p>
+    
+</div>
+
+
+{% endblock %}
