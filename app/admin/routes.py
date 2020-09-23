@@ -55,3 +55,11 @@ def cennik_dodaj():
         return redirect(url_for('admin.cennik'))
 
     return render_template('cennik_edycja.html', form=form, site_name="Dodanie pozycji cennika")
+
+@bp.route('/magazyn/')
+def magazyn():
+    return render_template('magazyn.html')
+
+@bp.route('/magazyn/dodaj')
+def magazyn_dodaj():
+    return render_template('magazyn_form.html')

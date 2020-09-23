@@ -73,8 +73,14 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link {% if request.endpoint.startswith('admin.cennik') %} active {% endif %}" href="{{ url_for('admin.cennik')}}">
-                  <span data-feather="home"></span>
-                  Cennik {% if request.endpoint.startswith('dashboard.index') %} <span class="sr-only">(current)</span> {% endif %}
+                  <span data-feather="dollar-sign"></span>
+                  Cennik
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.endpoint.startswith('admin.magazyn') %} active {% endif %}" href="{{ url_for('admin.magazyn')}}">
+                  <span data-feather="database"></span>
+                  Magazyn
                 </a>
               </li>
             </ul>
