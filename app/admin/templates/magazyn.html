@@ -10,9 +10,43 @@
     </div>
   </div>
 
-<div class="row">
+    <table id="ItemTable" class="table table-sm">
+      <thead>
+        <tr>
+          <th scope="col">Nazwa</th>
+          <th scope="col">Typ</th>
+          <th scope="col">EAN</th>
+          <th scope="col">Nazwa cennika</th>
+          <th scope="col">Rozmiar</th>
+          <th scope="col">Opcje</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for poz in pozycje %}
+        <tr>
+          <td>{{ poz.nazwa }}</td>
+          <td>{{ poz.typ }}</td>
+          <td>{{ poz.ean }}</td>
+          <td><a href="{{ url_for('admin.cennik_edycja', id=poz.cennik_id) }}">{{ poz.cennik_nazwa }}</a></td>
+          <td>{{ poz.rozmiar }}</td>
+          <td>
+            <a href="{{ url_for('admin.magazyn_edytuj', id=poz.item_id)}}" type="button" class="btn btn-primary btn-sm">Edytuj</a>
+            <a type="button" class="btn btn-danger btn-sm">Usuń</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-</div>
+{% endblock %}
 
-
+{% block scripts %}
+<script>
+// Basic example
+$(document).ready(function () {
+    $('#ItemTable').DataTable({
+        "pageLength": 100
+    });
+});
+</script>
 {% endblock %}

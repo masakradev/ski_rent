@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    <h1 class="h2">Dodaj wypożyczenie</h1>
+    <h1 class="h2">Dodaj wypożyczenie | Ustawienia</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
         <a href="{{ url_for('dashboard.dodaj_wypozyczenie') }} " class="btn btn-sm btn-outline-secondary">Dodaj wypożyczenie</a>
@@ -16,7 +16,7 @@
     <div class="form-row">
         <div class="form-group col-4">
             {{ form.klient_nazwa.label }}
-            {{ form.klient_nazwa(class_="form-control") }}
+            {{ form.klient_nazwa(class_="form-control",readonly=true) }}
             {% for error in form.klient_nazwa.errors %}
                 <small class="form-text text-danger">
                     {{ error }}
@@ -25,7 +25,7 @@
         </div>
         <div class="form-group col-4">
             {{ form.wypozyczenie_od.label }}
-            {{ form.wypozyczenie_od(class_="form-control") }}
+            {{ form.wypozyczenie_od(class_="form-control", readonly=true) }}
             {% for error in form.wypozyczenie_od.errors %}
                 <small class="form-text text-danger">
                     {{ error }}
@@ -34,7 +34,7 @@
         </div>
         <div class="form-group col-4">
             {{ form.wypozyczenie_do.label }}
-            {{ form.wypozyczenie_do(class_="form-control") }}
+            {{ form.wypozyczenie_do(class_="form-control", readonly=true) }}
             {% for error in form.wypozyczenie_do.errors %}
                 <small class="form-text text-danger">
                     {{ error }}
@@ -46,7 +46,7 @@
     <div class="form-row">
         <div class="form-group col-4">
             {{ form.klient_dowod.label }}
-            {{ form.klient_dowod(class_="form-control") }}
+            {{ form.klient_dowod(class_="form-control", readonly=true) }}
             {% for error in form.klient_dowod.errors %}
                 <small class="form-text text-danger">
                     {{ error }}
@@ -55,7 +55,7 @@
         </div>
         <div class="form-group col-4">
             {{ form.wypozyczenie_od_godz.label }}
-            {{ form.wypozyczenie_od_godz(class_="form-control") }}
+            {{ form.wypozyczenie_od_godz(class_="form-control", readonly=true) }}
             {% for error in form.wypozyczenie_od_godz.errors %}
                 <small class="form-text text-danger">
                     {{ error }}
@@ -64,7 +64,7 @@
         </div>
         <div class="form-group col-4">
             {{ form.wypozyczenie_do_godz.label }}
-            {{ form.wypozyczenie_do_godz(class_="form-control") }}
+            {{ form.wypozyczenie_do_godz(class_="form-control", readonly=true) }}
             {% for error in form.wypozyczenie_do_godz.errors %}
                 <small class="form-text text-danger">
                     {{ error }}
@@ -76,7 +76,7 @@
     <div class="form-row">
         <div class="form-group col-4">
             {{ form.klient_nr_tel.label }}
-            {{ form.klient_nr_tel(class_="form-control") }}
+            {{ form.klient_nr_tel(class_="form-control", readonly=true) }}
             {% for error in form.klient_nr_tel.errors %}
                 <small class="form-text text-danger">
                     {{ error }}
@@ -85,8 +85,92 @@
         </div>
     </div>
 
+    <hr>
+
+        <div class="form-row">
+        <div class="form-group col-4">
+            {{ form.dodaj.label }}
+            {{ form.dodaj(class_="form-control", id="dodaj") }}
+
+        </div>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+              <th scope="col">Nazwa</th>
+              <th scope="col">Rozmiar</th>
+              <th scope="col">Cena</th>
+              <th scope="col">Opcje</th>
+            </tr>
+          </thead>
+        <tbody>
+            {% for pozf in form.pozycje_form %}
+            {{ form.pozycje_form.csrf_token }}
+            <tr>
+              <td>{{ pozf.nazwa.data }}</td>
+              <td>{{ pozf.rozmiar.data }}</td>
+              <td style="width: 20%;">{{ pozf.cena(class_="form-control", id="cena") }}</td>
+              <td style="width: 10%">
+                  <button type="button" id="{{pozf.ean.data}}" name="remove" class="btn btn-secondary btn-sm">Usuń</button>
+              </td>
+                {{ pozf.key }}
+            </tr>
+            {% endfor %}
+            <tr>
+                <td style="text-align: right" colspan="2">Cena łącznie:</td>
+                <td> {{form.cena(class_="form-control", id="cena_wszystkie")}}</td>
+            </tr>
+        </tbody>
+    </table>
+
     {{ form.submit(class_="btn btn-primary btn-sm") }}
-    <a href="{{ url_for('dashboard.api_clear')}}" type="button" class="btn btn-secondary btn-sm">Wyczyść</a>
+    <a href="{{ url_for('dashboard.dodaj_wypozyczenie')}}" type="button" class="btn btn-secondary btn-sm">Wróć</a>
 </form>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+$("input[id='cena']").change(function (){
+    var value_ = 0;
+    $("input[id='cena']").each(function() {
+        value_ += Number($(this).val());
+    });
+
+    document.getElementById("cena_wszystkie").value = value_;
+
+});
+
+$("button[name='remove']").click(function() {
+    $.ajax({
+        url: '/api/remove_poz',
+        type: 'POST',
+        data: this.id,
+        success: function(html){
+            location.reload();
+        }
+    }).done(function (response) {
+
+      })
+});
+
+$("#dodaj").change(function(){
+
+    var inputVal = document.getElementById("dodaj").value;
+      $.ajax({
+        url: '/api/add',
+        type: 'POST',
+        data: inputVal,
+        success: function(html){
+            location.reload();
+        }
+    }).done(function (response) {
+
+      })
+
+});
+
+</script>
 {% endblock %}

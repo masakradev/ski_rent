@@ -1,8 +1,10 @@
 from flask import render_template, redirect, url_for, request, flash
 
 from app.admin import bp
-from app.admin.forms import CennikEdit
-from app.db.database import CennikGet, CennikGetById, CennikUpdate, CennikAdd
+from app.admin.forms import CennikEdit, MagazynEdit
+from app.db.database import CennikGet, CennikGetById, CennikUpdate, CennikAdd, MagazynAdd, MagazynGet, MagazynGetById
+from app.db.database import MagazynUpdate
+
 
 
 @bp.route('/cennik')
@@ -58,8 +60,61 @@ def cennik_dodaj():
 
 @bp.route('/magazyn/')
 def magazyn():
-    return render_template('magazyn.html')
+    pozycje = MagazynGet()
 
-@bp.route('/magazyn/dodaj')
+    return render_template('magazyn.html', pozycje=pozycje)
+
+@bp.route('/magazyn/dodaj', methods=['POST','GET'])
 def magazyn_dodaj():
-    return render_template('magazyn_form.html')
+    cennik = CennikGet()
+    form = MagazynEdit()
+
+    cennik_choices = [(i['cennik_id'], i['nazwa']) for i in cennik]
+
+    form.price.choices = cennik_choices
+
+    if form.validate_on_submit():
+        MagazynAdd(
+            request.form['nazwa'],
+            request.form['typ'],
+            request.form['ean'],
+            request.form['rozmiar'],
+            request.form['price']
+        )
+
+        flash('Dodano pozycje do magazynu o nazwie %s'% request.form['nazwa'])
+        return redirect(url_for('admin.magazyn'))
+
+
+    return render_template('magazyn_form.html', form=form)
+
+@bp.route('/magazyn/edytuj/<int:id>', methods=['POST', 'GET'])
+def magazyn_edytuj(id):
+    cennik = CennikGet()
+    form = MagazynEdit()
+    data = MagazynGetById(id)
+
+    cennik_choices = [(i['cennik_id'], i['nazwa']) for i in cennik]
+    form.price.choices = cennik_choices
+
+    form.price.default = data['price']
+    form.typ.default = data['typ']
+    form.process()
+
+    form.nazwa.data = data['nazwa']
+    form.ean.data = data['ean']
+    form.rozmiar.data = data['rozmiar']
+
+    if request.method == 'POST':
+        MagazynUpdate(
+            id,
+            request.form['nazwa'],
+            request.form['typ'],
+            request.form['ean'],
+            request.form['rozmiar'],
+            request.form['price']
+        )
+        flash('Zapisano zmiany w pozycji: %s' % request.form['nazwa'])
+        return redirect(url_for('admin.magazyn'))
+
+    return render_template('magazyn_form.html', form=form)

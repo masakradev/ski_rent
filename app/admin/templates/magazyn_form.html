@@ -7,9 +7,62 @@
     </div>
   </div>
 
-<div class="row">
+<form method="POST">
+    {{ form.csrf_token }}
+    <div class="form-row">
+        <div class="form-group col-4">
+            {{ form.nazwa.label }}
+            {{ form.nazwa(class_="form-control") }}
+            {% for error in form.nazwa.errors %}
+                <small class="form-text text-danger">
+                    {{ error }}
+                </small>
+            {% endfor %}
+        </div>
+        <div class="form-group col-4">
+            {{ form.typ.label }}
+            {{ form.typ(class_="form-control") }}
+            {% for error in form.typ.errors %}
+                <small class="form-text text-danger">
+                    {{ error }}
+                </small>
+            {% endfor %}
+        </div>
+        <div class="form-group col-4">
+            {{ form.ean.label }}
+            {{ form.ean(class_="form-control") }}
+            {% for error in form.ean.errors %}
+                <small class="form-text text-danger">
+                    {{ error }}
+                </small>
+            {% endfor %}
+        </div>
+    </div>
 
-</div>
+    <div class="form-row">
+        <div class="form-group col-4">
+            {{ form.rozmiar.label }}
+            {{ form.rozmiar(class_="form-control") }}
+            {% for error in form.rozmiar.errors %}
+                <small class="form-text text-danger">
+                    {{ error }}
+                </small>
+            {% endfor %}
+        </div>
+        <div class="form-group col-4">
+            {{ form.price.label }}
+            {{ form.price(class_="form-control") }}
+            {% for error in form.price.errors %}
+                <small class="form-text text-danger">
+                    {{ error }}
+                </small>
+            {% endfor %}
+        </div>
+    </div>
+
+    {{ form.submit(class_="btn btn-primary btn-sm") }}
+    <a href="{{ url_for('admin.magazyn')}}" type="button" class="btn btn-secondary btn-sm">Wróć</a>
+</form>
 
 
 {% endblock %}

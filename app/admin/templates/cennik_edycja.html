@@ -60,7 +60,8 @@
         </div>
     </div>
 
-    {{ form.submit }}
+    {{ form.submit(class_="btn btn-primary btn-sm") }}
+    <a href="{{ url_for('admin.cennik')}}" type="button" class="btn btn-secondary btn-sm">Wróć</a>
 </form>
 
 <div style="margin-top: 30px;" class="row">
