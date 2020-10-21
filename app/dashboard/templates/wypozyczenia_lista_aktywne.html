@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    <h1 class="h2">Lista wypożyczeń wszystkie</h1>
+    <h1 class="h2">Lista wypożyczeń dzisiaj</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
         <a href="{{ url_for('dashboard.dodaj_wypozyczenie') }} " class="btn btn-sm btn-outline-secondary">Dodaj wypożyczenie</a>
@@ -11,6 +11,7 @@
     </div>
   </div>
 
+
     <table id="ItemTable" class="table table-sm">
       <thead>
         <tr>
@@ -18,7 +19,6 @@
           <th scope="col">Nr tel</th>
           <th scope="col">Wypozycznie od</th>
           <th scope="col">Wypozyczenie do</th>
-          <th scope="col">Oddano</th>
           <th scope="col">Opcje</th>
         </tr>
       </thead>
@@ -30,19 +30,13 @@
           <td>{{ poz.wypozyczenie_od}} {{ poz.wypozyczenie_godz_od}}</td>
           <td>{{ poz.wypozyczenie_do}} {{ poz.wypozyczenie_godz_do}}</td>
           <td>
-              {% if poz.oddano == 0 %}
-                <span class="badge badge-warning">Nie odddano</span>
-              {% else %}
-                <span class="badge badge-secondary">Oddano</span>
-              {% endif %}
-          </td>
-          <td>
             <a href="" type="button" class="btn btn-primary btn-sm">Panel</a>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+
 
 {% endblock %}
 

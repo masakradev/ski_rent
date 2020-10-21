@@ -5,9 +5,11 @@ from decimal import Decimal
 from flask import render_template, flash, redirect, url_for, request, jsonify
 
 from app.dashboard import bp
-from app.dashboard.forms import WypozyczenieDodaj, WypozyczeniePozycja
+from app.dashboard.forms import WypozyczenieDodaj, WypozyczeniePozycja, WypozyczenieOddaj, WypozyczenieOddajDoplata
 from app.dashboard.models import Wypozyczenie
-from app.db.database import MagazynGetByEAN, WypozyczenieAdd
+
+from app.db.database import MagazynGetByEAN, WypozyczenieAdd, GetWypozyczeniaAktywne, GetWypozyczeniaWszystkie, GetWypoczyenieByEAN
+from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs
 
 
 @bp.route('/api/add', methods=['POST'])
@@ -131,21 +133,80 @@ def dodaj_wypozyczenie_dalej():
             wyp.wypozyczenie_godz_od,
             wyp.wypozyczenie_godz_do,
             wyp.cena,
-            wyp.pozycje
+            wyp.pozycje,
+            wyp.nr_tel
         )
 
         return redirect(url_for('dashboard.index'))
 
     return render_template('dodaj_wypozyczenie_dalej.html', form=form)
 
-@bp.route('/oddanie_wypozyczenia')
-def oddanie_wypozyczenia():
-    return render_template('oddanie_wypozyczenia.html')
 
-@bp.route('/wypozyczenia_lista_dzisiaj')
-def wypozyczenia_lista_dzisiaj():
-    return render_template('wypozyczenia_lista_dzisiaj.html')
+@bp.route('/wypozyczenie/<int:id>')
+def wypozyczenie(id):
+    data = GetWypozyczenieByID(id)
+    if data is None:
+        flash('Nie ma takiego zlecenia')
+        return redirect(url_for('dashboard.index'))
+    return render_template('wypozyczenie.html', info=data['info'], pozycje=data['pozycje'])
+
+@bp.route('/oddanie_wypozyczenia', methods=['POST', 'GET'])
+def oddanie_wypozyczenia():
+    form = WypozyczenieOddaj()
+
+    if form.validate_on_submit():
+        data = GetWypoczyenieByEAN(form.kod.data)
+        if data is None:
+            flash("Nie ma takiego kodu lub brak wypożyczenia z takim przedmiotem")
+        else:
+            return redirect(url_for('dashboard.oddanie_wypozyczenia_dalej', id=data['wypozyczenie_id']))
+    return render_template('oddanie_wypozyczenia.html', form=form)
+
+@bp.route('/oddanie_wypozyczenia_dalej/<int:id>', methods=['POST', 'GET'])
+def oddanie_wypozyczenia_dalej(id):
+    form = WypozyczenieOddajDoplata()
+    data = GetWypozyczenieByID(id)
+    info = data['info']
+    pozycje = data['pozycje']
+
+    if data is None:
+        flash('Nie ma takiego zlecenia')
+        return redirect(url_for('dashboard.index'))
+
+    now = datetime.datetime.now()
+
+    day_now = "%s-%s-%s %s:%s" % (now.year, now.month, now.day, now.hour, now.minute)
+    day_do = "%s %s" % (info['wypozyczenie_do'], info['wypozyczenie_godz_do'])
+
+    days_compare = datetime.datetime.strptime(day_now, '%Y-%m-%d %H:%M') - datetime.datetime.strptime(
+        day_do, '%Y-%m-%d %H:%M')
+
+    minutes_late = days_compare.seconds/60
+
+    ret = ""
+
+    if days_compare.days < 0:
+        ret = "Brak dopłaty"
+    else:
+        if minutes_late < 30:
+            ret = "Spóźnienie o %s minut"% minutes_late
+        else:
+            cena = 0
+            cennik = GetItemsPriceByEANs(id)
+            for x in cennik:
+               cena += int(x['price1'] * minutes_late/60)
+            form.doplata.data = cena
+            ret = "Spóźnienie o %s minut"% minutes_late
+
+    return render_template('oddanie_wypozyczenia_dalej.html', info=info, pozycje=pozycje, rozliczenie=ret, form=form)
+
+@bp.route('/wypozyczenia_lista_aktywne')
+def wypozyczenia_lista_aktywne():
+    pozycje = GetWypozyczeniaAktywne()
+
+    return render_template('wypozyczenia_lista_aktywne.html', pozycje=pozycje)
 
 @bp.route('/wypozyczenia_lista_wszystkie')
 def wypozyczenia_lista_wszystkie():
-    return render_template('wypozyczenia_lista_wszystkie.html')
+    pozycje = GetWypozyczeniaWszystkie()
+    return render_template('wypozyczenia_lista_wszystkie.html', pozycje=pozycje)

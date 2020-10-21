@@ -28,3 +28,12 @@ class WypozyczenieDodaj(FlaskForm):
     pozycje_form = FieldList(FormField(WypozyczeniePozycja))
 
     submit = SubmitField('Dalej')
+
+
+class WypozyczenieOddaj(FlaskForm):
+    kod = StringField('Kod kreskowy')
+    submit = SubmitField('Oddaj')
+
+class WypozyczenieOddajDoplata(FlaskForm):
+    doplata = IntegerField('Dopłata')
+    submit = SubmitField('Oddaj')

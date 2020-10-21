@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Oddanie wypożyczenia</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <a href="{{ url_for('dashboard.dodaj_wypozyczenie') }} " class="btn btn-sm btn-outline-secondary">Dodaj wypożyczenie</a>
+        <a href="{{ url_for('dashboard.oddanie_wypozyczenia') }} " class="btn btn-sm btn-outline-secondary">Oddanie wypożyczenia</a>
+      </div>
+    </div>
+  </div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5> Informacje </h5>
+                <table class="table table-sm">
+                     <tbody>
+                        <tr>
+                          <td>Imie i Nazwisko</td>
+                          <td>{{ info.klient_name}}</td>
+                        </tr>
+                        <tr>
+                          <td>Seria i nr dowodu</td>
+                          <td>{{ info.klient_dowod}}</td>
+                        </tr>
+                        <tr>
+                          <td>Wypożyczenie od</td>
+                          <td>{{ info.wypozyczenie_od }} {{ info.wypozyczenie_godz_od }}</td>
+                        </tr>
+                        <tr>
+                            <td>Wypożyczenie do</td>
+                            <td>{{ info.wypozyczenie_do }} {{ info.wypozyczenie_godz_do }}</td>
+                        </tr>
+                         <tr>
+                            <td>Cena</td>
+                            <td>{{ info.price }} zł</td>
+                        </tr>
+                        <tr>
+                            <td>Numer telefonu</td>
+                            <td>{{ info.klient_tel }}</td>
+                        </tr>
+                      </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5> Lista wypożyczeń </h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                          <th scope="col">Nazwa</th>
+                          <th scope="col">EAN</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for poz in pozycje %}
+                        <tr>
+                            <td>{{poz.nazwa}}</td>
+                            <td>{{poz.ean}}</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

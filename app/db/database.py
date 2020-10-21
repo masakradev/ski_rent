@@ -141,15 +141,15 @@ def MagazynUpdate(id, nazwa, typ, ean, rozmiar, price):
 
 
 def WypozyczenieAdd(klient_name, klient_dowod, wypozyczenie_od, wypozyczenie_do, wypozyczenie_godz_od,
-                    wypozyczenie_godz_do, price, pozycje):
+                    wypozyczenie_godz_do, price, pozycje, klient_tel):
 
     conn = GetConnection()
     c = conn.cursor()
     c.execute('''INSERT INTO wypozyczenia (klient_name, klient_dowod, wypozyczenie_od, wypozyczenie_do, wypozyczenie_godz_od, 
-                    wypozyczenie_godz_do, price, oddano, data_utworzenia) VALUES 
+                    wypozyczenie_godz_do, price, oddano, data_utworzenia, klient_tel) VALUES 
                     ('%s', '%s', '%s', '%s', '%s', '%s', %d, 0, '%s')''' % (klient_name, klient_dowod, wypozyczenie_od,
                                                                       wypozyczenie_do, wypozyczenie_godz_od,
-                                                                       wypozyczenie_godz_do, int(price), str(gettms())))
+                                                                       wypozyczenie_godz_do, int(price), str(gettms()), klient_tel))
 
     wyp_id = c.lastrowid
     poz = []
@@ -162,13 +162,65 @@ def WypozyczenieAdd(klient_name, klient_dowod, wypozyczenie_od, wypozyczenie_do,
     conn.close()
 
 
-def CREATE_WYPOZYCZENIE_RZECZY_AKTYWNE():
-    pass
+def GetWypozyczeniaAktywne():
+    conn = GetConnection(True)
+    c = conn.cursor()
+    c.execute('SELECT * FROM wypozyczenia WHERE oddano = 0')
+    data = c.fetchall()
 
+    conn.close()
+    return data
 
-def CREATE_WYPOZYCZENIE_RZECZY():
-    pass
+def GetWypozyczeniaWszystkie():
+    conn = GetConnection(True)
+    c = conn.cursor()
+    c.execute('SELECT * FROM wypozyczenia')
+    data = c.fetchall()
 
+    conn.close()
+    return data
+
+def GetWypoczyenieByEAN(ean):
+    conn = GetConnection(True)
+    c = conn.cursor()
+    c.execute("SELECT * FROM wypozyczeniaitemsactive WHERE ean = '%s'"% ean)
+    data = c.fetchone()
+
+    conn.close()
+    return data
+
+def GetWypozyczenieByID(id):
+    return_data = {}
+    conn = GetConnection(True)
+    c = conn.cursor()
+    c.execute("SELECT * FROM wypozyczenia WHERE wypozyczenie_id = %s" % id)
+    data = c.fetchone()
+
+    return_data['info'] = data
+
+    if data['oddano'] == 0:
+        c.execute("SELECT * FROM wypozyczeniaitemsactive WHERE wypozyczenie_id = %s" % id)
+    else:
+        c.execute("SELECT * FROM wypozyczeniaitems WHERE wypozyczenie_id = %s" % id)
+
+    data = c.fetchall()
+    return_data['pozycje'] = data
+    return return_data
+
+def GetItemsPriceByEANs(id):
+    conn = GetConnection(True)
+    c = conn.cursor()
+    c.execute("""SELECT wia.item_id,
+                        wia.wypozyczenie_id, 
+                        i.price,
+                        c.price1
+                FROM wypozyczeniaitemsactive as wia 
+                LEFT JOIN items AS i ON wia.item_id = i.item_id
+                LEFT JOIN cennik AS c ON i.price = c.cennik_id
+                WHERE wia.wypozyczenie_id = %s"""% id)
+    data = c.fetchall()
+    conn.close()
+    return data
 
 def CREATE_WYPOZYCZENIE_RZECZY_TERAZ():
     pass

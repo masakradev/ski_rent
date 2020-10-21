@@ -8,3 +8,4 @@ __pycache__/
 *.crt
 /config.py
 database.db
+/app/static/pdf/*.pdf
