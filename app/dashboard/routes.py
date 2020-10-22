@@ -2,7 +2,7 @@ import datetime
 from decimal import Decimal
 
 
-from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask import render_template, flash, redirect, url_for, request, jsonify, send_file
 
 from app.dashboard import bp
 from app.dashboard.forms import WypozyczenieDodaj, WypozyczeniePozycja, WypozyczenieOddaj, WypozyczenieOddajDoplata
@@ -10,6 +10,8 @@ from app.dashboard.models import Wypozyczenie
 
 from app.db.database import MagazynGetByEAN, WypozyczenieAdd, GetWypozyczeniaAktywne, GetWypozyczeniaWszystkie, GetWypoczyenieByEAN
 from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs
+
+from app.pdf.generator import create_pdf
 
 
 @bp.route('/api/add', methods=['POST'])
@@ -48,6 +50,11 @@ def api_clear():
     wyp.clear()
 
     return redirect(url_for('dashboard.dodaj_wypozyczenie'))
+
+@bp.route('/umowa/<int:id>')
+def get_pdf(id):
+    return send_file('static/pdf/{}.pdf'.format(id))
+
 
 @bp.route('/')
 def index():
@@ -125,7 +132,7 @@ def dodaj_wypozyczenie_dalej():
         wyp.update(request.form)
         Wypozyczenie.save(wyp)
 
-        WypozyczenieAdd(
+        data = WypozyczenieAdd(
             wyp.klient_name,
             wyp.klient_dowod,
             wyp.wypozyczenie_od,
@@ -137,7 +144,11 @@ def dodaj_wypozyczenie_dalej():
             wyp.nr_tel
         )
 
-        return redirect(url_for('dashboard.index'))
+        create_pdf(
+            data, #ID Wypożyczenia
+        )
+
+        return redirect(url_for('dashboard.wypozyczenie', id=data))
 
     return render_template('dodaj_wypozyczenie_dalej.html', form=form)
 

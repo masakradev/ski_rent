@@ -147,7 +147,7 @@ def WypozyczenieAdd(klient_name, klient_dowod, wypozyczenie_od, wypozyczenie_do,
     c = conn.cursor()
     c.execute('''INSERT INTO wypozyczenia (klient_name, klient_dowod, wypozyczenie_od, wypozyczenie_do, wypozyczenie_godz_od, 
                     wypozyczenie_godz_do, price, oddano, data_utworzenia, klient_tel) VALUES 
-                    ('%s', '%s', '%s', '%s', '%s', '%s', %d, 0, '%s')''' % (klient_name, klient_dowod, wypozyczenie_od,
+                    ('%s', '%s', '%s', '%s', '%s', '%s', %d, 0, '%s', '%s')''' % (klient_name, klient_dowod, wypozyczenie_od,
                                                                       wypozyczenie_do, wypozyczenie_godz_od,
                                                                        wypozyczenie_godz_do, int(price), str(gettms()), klient_tel))
 
@@ -160,6 +160,8 @@ def WypozyczenieAdd(klient_name, klient_dowod, wypozyczenie_od, wypozyczenie_do,
     c.executemany('INSERT INTO wypozyczeniaitemsactive (item_id, wypozyczenie_id, ean, nazwa, cena) VALUES (?,?,?,?,?)', poz)
     conn.commit()
     conn.close()
+
+    return wyp_id
 
 
 def GetWypozyczeniaAktywne():

@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    <h1 class="h2">Oddanie wypożyczenia</h1>
+    <h1 class="h2">Informacje o wypożyczeniu</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
         <a href="{{ url_for('dashboard.dodaj_wypozyczenie') }} " class="btn btn-sm btn-outline-secondary">Dodaj wypożyczenie</a>
@@ -71,6 +71,18 @@
         </div>
     </div>
 </div>
+<br>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5> Opcje </h5>
+                    <a type="button" target="_blank" href="{{ url_for('dashboard.get_pdf', id=info.wypozyczenie_id)}}"class="btn btn-primary">Drukuj</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 {% endblock %}

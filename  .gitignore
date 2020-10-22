@@ -9,3 +9,4 @@ __pycache__/
 /config.py
 database.db
 /app/static/pdf/*.pdf
+/app/static/pdfSettings.json
