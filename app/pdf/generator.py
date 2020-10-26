@@ -11,10 +11,15 @@ from reportlab.lib.styles import ParagraphStyle
 
 from config import Config
 
+from app.db.database import GetWypozyczenieByID
+
 import os
 import json
 
 strings = {}
+
+def get_pdf_data(id):
+    return GetWypozyczenieByID(id)
 
 def generate_settings():
     settings = {"header1": "",
@@ -48,15 +53,15 @@ def create_logo_section(pdf):
     pdf.drawString(44,790-73.2-25, strings['header2'])
     pdf.drawString(52,790-73.2-35, strings['header3'])
 
-def create_header_section(pdf):
+def create_header_section(pdf, data_od, client_name, client_id):
 
     header_string = "UMOWA WYPOŻYCZENIA SPRZĘTU"
     data_string = "Zawarta w dniu"
 
-    data = "20/05/2020"
-    client_name = "Krzysztof Pawlik"
-    client_addres = "Godziszka Bławaktów 626"
-    client_id_card = "EBS 0271362"
+    data = data_od
+    client_name = client_name
+    client_addres = "............................................"
+    client_id_card = client_id
 
     pdf.setLineWidth(.3)
 
@@ -79,7 +84,7 @@ def create_header_section(pdf):
     pdf.drawString(200, 660, strings['owner3'])
     pdf.drawString(200, 645, "Zwanym dalej 'Wypożyczającym'")
 
-def create_items_talbe(pdf):
+def create_items_talbe(pdf, items):
 
     pdf.setFont('AbhayaLibreB', 10)
     string = "&1"
@@ -91,12 +96,8 @@ def create_items_talbe(pdf):
 
     table_data = [["Przedmiot", "Wartość", "Cena"]]
 
-    for x in range(15):
-        tab = []
-        tab.append("Narty")
-        tab.append("2000zł")
-        tab.append("120zł")
-        table_data.append(tab)
+    for x in items:
+        table_data.append(x)
 
     inch_s = 0.0104166666666665
     multiple = 0.23
@@ -124,7 +125,7 @@ def create_items_talbe(pdf):
     t.drawOn(pdf, 50, 595 - offset)
 
 
-def create_central_section(pdf):
+def create_central_section(pdf, date_start, date_end, date_hours_start, date_hours_end, price):
     pdf.setFont('AbhayaLibreB', 10)
     string = "&2"
     string_width = 595 / 2 - (stringWidth(string, 'AbhayaLibreB', 10) / 2)
@@ -140,8 +141,8 @@ def create_central_section(pdf):
 
     pdf.drawString(string_width, 540 - 276 , string)
 
-    data_od = "2020/04/20 15:22"
-    data_do = "2020/04/21 20:44"
+    data_od = date_start + ' ' + date_hours_start
+    data_do = date_end + ' ' + date_hours_end
 
     pdf.setFont('AbhayaLibre', 10)
     pdf.drawString(50, 525 - 276, "1.) Umowa wypożyczenia zostaje zawarta na okres: od %s do %s" % (data_od , data_do))
@@ -157,7 +158,7 @@ def create_central_section(pdf):
     cena = "500zł"
 
     pdf.setFont('AbhayaLibre', 10)
-    pdf.drawString(50, 460 - 276, "1.) Opłata za sprzęt w wyznaczonym okresie wynosi: %s" % cena)
+    pdf.drawString(50, 460 - 276, "1.) Opłata za sprzęt w wyznaczonym okresie wynosi: %s" % price)
     pdf.drawString(50, 445 - 276, "2.) W przypadku niedotrzymania terminu oddania sprzętu, korzystający zostanie obciążony dodatkową kwotą")
     pdf.drawString(50, 430 - 276, "    za przedłużenie wypożyczenia stosownie do ceny wypożyczenia sprzętu")
 
@@ -198,6 +199,19 @@ def create_footer(pdf):
 def create_pdf(wypozyczenie_id):
     load_settings()
 
+    data = get_pdf_data(wypozyczenie_id)
+
+    date_start = data['info']['wypozyczenie_od']
+    date_end = data['info']['wypozyczenie_do']
+    date_hours_start = data['info']['wypozyczenie_godz_od']
+    date_hours_end = data['info']['wypozyczenie_godz_do']
+    client_name = data['info']['klient_name']
+    client_id = data['info']['klient_dowod']
+    price = data['info']['price']
+
+    items = [[x['nazwa'], x['wartosc'], x['cena']] for x in data['pozycje']]
+
+
     pdfmetrics.registerFont(TTFont('AbhayaLibre', 'app/pdf/font/AbhayaLibre.ttf'))
     pdfmetrics.registerFont(TTFont('AbhayaLibreB', 'app/pdf/font/AbhayaLibre-Bold.ttf'))
     pdfmetrics.registerFont(TTFont('AbhayaLibreSb', 'app/pdf/font/AbhayaLibre-SemiBold.ttf'))
@@ -210,13 +224,13 @@ def create_pdf(wypozyczenie_id):
     create_logo_section(canvas_pdf)
 
     # Header
-    create_header_section(canvas_pdf)
+    create_header_section(canvas_pdf, date_start, client_name, client_id)
 
     # Items Table
-    create_items_talbe(canvas_pdf)
+    create_items_talbe(canvas_pdf, items)
 
     # Central
-    create_central_section(canvas_pdf)
+    create_central_section(canvas_pdf, date_start, date_end, date_hours_start, date_hours_end, price)
 
     # Footer
     create_footer(canvas_pdf)

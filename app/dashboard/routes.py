@@ -53,8 +53,11 @@ def api_clear():
 
 @bp.route('/umowa/<int:id>')
 def get_pdf(id):
-    return send_file('static/pdf/{}.pdf'.format(id))
-
+    try:
+        return send_file('static/pdf/{}.pdf'.format(id))
+    except FileNotFoundError:
+        create_pdf(id)
+        return send_file('static/pdf/{}.pdf'.format(id))
 
 @bp.route('/')
 def index():
@@ -145,7 +148,7 @@ def dodaj_wypozyczenie_dalej():
         )
 
         create_pdf(
-            data, #ID Wypożyczenia
+            data #Id wypożyczenia
         )
 
         return redirect(url_for('dashboard.wypozyczenie', id=data))

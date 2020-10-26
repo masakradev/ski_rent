@@ -131,11 +131,11 @@ def MagazynGetByEAN(ean):
     return data
 
 
-def MagazynUpdate(id, nazwa, typ, ean, rozmiar, price):
+def MagazynUpdate(id, nazwa, typ, ean, rozmiar, price, wartosc):
     conn = GetConnection(True)
     c = conn.cursor()
-    c.execute("UPDATE items SET nazwa= '%s', typ= '%s', ean= '%s', rozmiar= '%s', price= %d WHERE item_id = %d" %
-              (nazwa, typ, ean, rozmiar, int(price), int(id)))
+    c.execute("UPDATE items SET nazwa= '%s', typ= '%s', ean= '%s', rozmiar= '%s', price= %d, wartosc= '%s' WHERE item_id = %d" %
+              (nazwa, typ, ean, rozmiar, int(price), wartosc, int(id)))
     conn.commit()
     conn.close()
 
@@ -201,9 +201,21 @@ def GetWypozyczenieByID(id):
     return_data['info'] = data
 
     if data['oddano'] == 0:
-        c.execute("SELECT * FROM wypozyczeniaitemsactive WHERE wypozyczenie_id = %s" % id)
+        c.execute("""SELECT wyp.item_id,
+                            wyp.nazwa,
+                            wyp.cena,
+                            i.wartosc
+                     FROM wypozyczeniaitemsactive AS wyp
+                     LEFT JOIN items AS i ON wyp.item_id = i.item_id
+                     WHERE wypozyczenie_id = %s""" % id)
     else:
-        c.execute("SELECT * FROM wypozyczeniaitems WHERE wypozyczenie_id = %s" % id)
+        c.execute("""SELECT wyp.item_id,
+                            wyp.nazwa,
+                            wyp.cena,
+                            i.wartosc
+                     FROM wypozyczeniaitems AS wyp
+                     LEFT JOIN items AS i ON wyp.item_id = i.item_id
+                     WHERE wypozyczenie_id = %s""" % id)
 
     data = c.fetchall()
     return_data['pozycje'] = data
