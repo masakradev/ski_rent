@@ -79,7 +79,8 @@ def magazyn_dodaj():
             request.form['typ'],
             request.form['ean'],
             request.form['rozmiar'],
-            request.form['price']
+            request.form['price'],
+            request.form['wartosc']
         )
 
         flash('Dodano pozycje do magazynu o nazwie %s'% request.form['nazwa'])
@@ -104,6 +105,7 @@ def magazyn_edytuj(id):
     form.nazwa.data = data['nazwa']
     form.ean.data = data['ean']
     form.rozmiar.data = data['rozmiar']
+    form.wartosc.data = data['wartosc']
 
     if request.method == 'POST':
         MagazynUpdate(
@@ -112,7 +114,8 @@ def magazyn_edytuj(id):
             request.form['typ'],
             request.form['ean'],
             request.form['rozmiar'],
-            request.form['price']
+            request.form['price'],
+            request.form['wartosc']
         )
         flash('Zapisano zmiany w pozycji: %s' % request.form['nazwa'])
         return redirect(url_for('admin.magazyn'))

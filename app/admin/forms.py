@@ -16,4 +16,5 @@ class MagazynEdit(FlaskForm):
     ean = StringField('EAN', validators=[DataRequired()])
     rozmiar = StringField('Rozmiar', validators=[DataRequired()])
     price = SelectField('Cennik')
+    wartosc = StringField('Wartość', validators=[DataRequired()])
     submit = SubmitField('Zapisz')
