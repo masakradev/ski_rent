@@ -9,7 +9,7 @@ from app.dashboard.forms import WypozyczenieDodaj, WypozyczeniePozycja, Wypozycz
 from app.dashboard.models import Wypozyczenie
 
 from app.db.database import MagazynGetByEAN, WypozyczenieAdd, GetWypozyczeniaAktywne, GetWypozyczeniaWszystkie, GetWypoczyenieByEAN
-from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs
+from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs, WypozyczenieOddaj
 
 from app.pdf.generator import create_pdf
 
@@ -50,6 +50,11 @@ def api_clear():
     wyp.clear()
 
     return redirect(url_for('dashboard.dodaj_wypozyczenie'))
+
+@bp.route('/api/wypozyczenie_oddaj/<int:id>')
+def api_wypozyczenie_oddaj(id):
+    WypozyczenieOddaj(id)
+    return redirect(url_for('dashboard.wypozyczenie', id=id))
 
 @bp.route('/umowa/<int:id>')
 def get_pdf(id):

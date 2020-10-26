@@ -236,5 +236,12 @@ def GetItemsPriceByEANs(id):
     conn.close()
     return data
 
-def CREATE_WYPOZYCZENIE_RZECZY_TERAZ():
-    pass
+def WypozyczenieOddaj(id):
+    conn = GetConnection()
+    c = conn.cursor()
+    c.execute("""UPDATE wypozyczenia SET oddano = 1 WHERE wypozyczenie_id = %d """% id)
+    c.execute("""INSERT INTO wypozyczeniaitems SELECT * FROM wypozyczeniaitemsactive WHERE wypozyczenie_id = %d"""% id)
+    c.execute("""DELETE FROM wypozyczeniaitemsactive WHERE wypozyczenie_id = %d """% id)
+
+    conn.commit()
+    conn.close()

@@ -78,6 +78,9 @@
             <div class="card-body">
                 <h5> Opcje </h5>
                     <a type="button" target="_blank" href="{{ url_for('dashboard.get_pdf', id=info.wypozyczenie_id)}}"class="btn btn-primary">Drukuj</a>
+                    {% if info.oddano == 0%}
+                    <a type="button" href="{{ url_for('dashboard.api_wypozyczenie_oddaj', id=info.wypozyczenie_id)}}"class="btn btn-danger">Oddaj</a>
+                    {% endif %}
             </div>
         </div>
     </div>

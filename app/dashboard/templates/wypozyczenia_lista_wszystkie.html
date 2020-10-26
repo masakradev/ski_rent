@@ -37,7 +37,7 @@
               {% endif %}
           </td>
           <td>
-            <a href="" type="button" class="btn btn-primary btn-sm">Panel</a>
+            <a href="{{ url_for('dashboard.wypozyczenie', id=poz.wypozyczenie_id)}}" type="button" class="btn btn-primary btn-sm">Panel</a>
           </td>
         </tr>
         {% endfor %}

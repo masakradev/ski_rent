@@ -30,7 +30,7 @@
           <td>{{ poz.wypozyczenie_od}} {{ poz.wypozyczenie_godz_od}}</td>
           <td>{{ poz.wypozyczenie_do}} {{ poz.wypozyczenie_godz_do}}</td>
           <td>
-            <a href="" type="button" class="btn btn-primary btn-sm">Panel</a>
+            <a href="{{ url_for('dashboard.wypozyczenie', id=poz.wypozyczenie_id)}}" type="button" class="btn btn-primary btn-sm">Panel</a>
           </td>
         </tr>
         {% endfor %}
