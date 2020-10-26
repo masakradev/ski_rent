@@ -7,7 +7,12 @@
     <meta name="author" content="masakra">
     <link rel="icon" href="{{ url_for('static', filename='ski.ico')}}">
 
-    <title>PamirSki</title>
+    {% if config['APP_NAME'] %}
+        <title>{{ config['APP_NAME'] }}</title>
+    {% else %}
+    <title>Wypożyczalnia</title>
+    {% endif %}
+
 
     <!-- Bootstrap core CSS -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
@@ -35,7 +40,7 @@
               <li class="nav-item">
                 <a class="nav-link {% if request.endpoint.startswith('dashboard.index') %} active {% endif %}" href="{{ url_for('dashboard.index')}}">
                   <span data-feather="home"></span>
-                  Dashboard {% if request.endpoint.startswith('dashboard.index') %} <span class="sr-only">(current)</span> {% endif %}
+                  Dashboard  {% if request.endpoint.startswith('dashboard.index') %} <span class="sr-only">(current)</span> {% endif %}
                 </a>
               </li>
               <li class="nav-item">

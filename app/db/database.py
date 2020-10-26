@@ -67,11 +67,11 @@ def CennikUpdate(id, nazwa, stage1, stage2, price1, price2):
 #   Magazyn
 #
 
-def MagazynAdd(nazwa, typ, ean, rozmiar, price):
+def MagazynAdd(nazwa, typ, ean, rozmiar, price, wartosc):
     conn = GetConnection()
     c = conn.cursor()
-    c.execute('''INSERT INTO items (nazwa, typ, ean, rozmiar, price) VALUES 
-                    ('%s', '%s', '%s', '%s', %d)''' % (nazwa, typ, ean, rozmiar, int(price)))
+    c.execute('''INSERT INTO items (nazwa, typ, ean, rozmiar, price, wartosc) VALUES 
+                    ('%s', '%s', '%s', '%s', %d, '%s')''' % (nazwa, typ, ean, rozmiar, int(price), wartosc))
 
     conn.commit()
     conn.close()
@@ -101,7 +101,7 @@ def MagazynGetById(id):
     conn = GetConnection(True)
     c = conn.cursor()
 
-    c.execute(''' SELECT item_id, nazwa, typ, ean, rozmiar, price FROM items WHERE item_id = %d ''' % int(id))
+    c.execute(''' SELECT item_id, nazwa, typ, ean, rozmiar, price, wartosc FROM items WHERE item_id = %d ''' % int(id))
     data = c.fetchone()
     conn.close()
 
