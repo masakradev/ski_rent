@@ -9,7 +9,7 @@ from app.dashboard.forms import WypozyczenieDodaj, WypozyczeniePozycja, Wypozycz
 from app.dashboard.models import Wypozyczenie
 
 from app.db.database import MagazynGetByEAN, WypozyczenieAdd, GetWypozyczeniaAktywne, GetWypozyczeniaWszystkie, GetWypoczyenieByEAN
-from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs, WypozyczenieOddajById
+from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs, WypozyczenieOddajById, IndexCountsGet
 
 from app.pdf.generator import create_pdf
 
@@ -62,7 +62,8 @@ def get_pdf(id):
 
 @bp.route('/')
 def index():
-    return render_template('index.html')
+    data = IndexCountsGet()
+    return render_template('index.html', data = data)
 
 
 @bp.route('/dodaj_wypozyczenie', methods=['POST','GET'])

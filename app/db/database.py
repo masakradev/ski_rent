@@ -18,6 +18,34 @@ def gettms():
     return now.strftime("%Y-%m-%d %H:%M:%S")
 
 #
+#   Obsługa liczników
+#
+
+def IndexCountsGet():
+    return_data = {
+        'wypozyczenia':0,
+        'magazyn':0,
+        'do_oddania':0
+    }
+    conn = GetConnection()
+    c = conn.cursor()
+
+    c.execute("""SELECT COUNT(wypozyczenie_id) FROM wypozyczenia""")
+    data = c.fetchone()
+    return_data['wypozyczenia'] = data[0]
+
+    c.execute("""SELECT COUNT(item_id) FROM items""")
+    data = c.fetchone()
+    return_data['magazyn'] = data[0]
+
+    data_dzis = datetime.now().strftime("%Y-%m-%d")
+    c.execute("""SELECT COUNT(wypozyczenie_id) FROM wypozyczenia WHERE oddano = 0 AND wypozyczenie_do = %s""" % data_dzis)
+    data = c.fetchone()
+    return_data['do_oddania'] = data[0]
+
+    return return_data
+
+#
 #   Obsługa cennika
 #
 
@@ -163,6 +191,9 @@ def WypozyczenieAdd(klient_name, klient_dowod, wypozyczenie_od, wypozyczenie_do,
 
     return wyp_id
 
+#
+#   Wypozyczenia
+#
 
 def GetWypozyczeniaAktywne():
     conn = GetConnection(True)
@@ -204,6 +235,7 @@ def GetWypozyczenieByID(id):
         c.execute("""SELECT wyp.item_id,
                             wyp.nazwa,
                             wyp.cena,
+                            wyp.ean,
                             i.wartosc
                      FROM wypozyczeniaitemsactive AS wyp
                      LEFT JOIN items AS i ON wyp.item_id = i.item_id
@@ -212,6 +244,7 @@ def GetWypozyczenieByID(id):
         c.execute("""SELECT wyp.item_id,
                             wyp.nazwa,
                             wyp.cena,
+                            wyp.ean,
                             i.wartosc
                      FROM wypozyczeniaitems AS wyp
                      LEFT JOIN items AS i ON wyp.item_id = i.item_id
