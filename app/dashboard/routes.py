@@ -9,7 +9,7 @@ from app.dashboard.forms import WypozyczenieDodaj, WypozyczeniePozycja, Wypozycz
 from app.dashboard.models import Wypozyczenie
 
 from app.db.database import MagazynGetByEAN, WypozyczenieAdd, GetWypozyczeniaAktywne, GetWypozyczeniaWszystkie, GetWypoczyenieByEAN
-from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs, WypozyczenieOddaj
+from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs, WypozyczenieOddajById
 
 from app.pdf.generator import create_pdf
 
@@ -51,10 +51,6 @@ def api_clear():
 
     return redirect(url_for('dashboard.dodaj_wypozyczenie'))
 
-@bp.route('/api/wypozyczenie_oddaj/<int:id>')
-def api_wypozyczenie_oddaj(id):
-    WypozyczenieOddaj(id)
-    return redirect(url_for('dashboard.wypozyczenie', id=id))
 
 @bp.route('/umowa/<int:id>')
 def get_pdf(id):
@@ -200,7 +196,11 @@ def oddanie_wypozyczenia_dalej(id):
     days_compare = datetime.datetime.strptime(day_now, '%Y-%m-%d %H:%M') - datetime.datetime.strptime(
         day_do, '%Y-%m-%d %H:%M')
 
-    minutes_late = days_compare.seconds/60
+
+    if days_compare.days > 0:
+        minutes_late = int(days_compare.days * 1440) + int(days_compare.seconds/60)
+    else:
+        minutes_late = days_compare.seconds / 60
 
     ret = ""
 
@@ -215,7 +215,14 @@ def oddanie_wypozyczenia_dalej(id):
             for x in cennik:
                cena += int(x['price1'] * minutes_late/60)
             form.doplata.data = cena
-            ret = "Spóźnienie o %s minut"% minutes_late
+            if days_compare.days > 0:
+                ret = "Spóźnienie o %s minut (%d dni)"% (minutes_late, minutes_late/1440)
+            else:
+                ret = "Spóźnienie o %s minut (%d godzin)" % (minutes_late, minutes_late / 60)
+
+    if form.validate_on_submit():
+        WypozyczenieOddajById(id, request.form.get('doplata'))
+        #return redirect(url_for('dashboard.index'))
 
     return render_template('oddanie_wypozyczenia_dalej.html', info=info, pozycje=pozycje, rozliczenie=ret, form=form)
 
