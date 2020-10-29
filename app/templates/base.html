@@ -27,7 +27,11 @@
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">PamirSki</a>
+      {% if config['APP_NAME'] %}
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">{{ config['APP_NAME'] }}</a>
+      {% else %}
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">SkiRent</a>
+      {% endif %}
     </nav>
 
     <div class="container-fluid">

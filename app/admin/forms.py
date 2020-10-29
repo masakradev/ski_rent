@@ -3,6 +3,7 @@ from wtforms import StringField, IntegerField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 
 class CennikEdit(FlaskForm):
+    "Html forms do edycji cenników"
     nazwa = StringField('Nazwa', validators=[DataRequired()])
     przedzial1 = IntegerField('Przedzial 1', validators=[DataRequired()])
     przedzial2 = IntegerField('Przedzial 2', validators=[DataRequired()])
@@ -11,6 +12,7 @@ class CennikEdit(FlaskForm):
     submit = SubmitField('Zapisz')
 
 class MagazynEdit(FlaskForm):
+    "Html forms do edycji pozycji w magazynie"
     nazwa = StringField('Nazwa', validators=[DataRequired()])
     typ = SelectField('Typ', choices=[('Narty', 'Narty'), ('Deski', 'Deski'), ('Kaski', 'Kaski')])
     ean = StringField('EAN', validators=[DataRequired()])

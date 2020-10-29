@@ -1,6 +1,5 @@
 import sqlite3
 from datetime import datetime
-from config import Config
 
 
 def GetConnection(row=False):
@@ -50,7 +49,7 @@ def IndexCountsGet():
 #
 
 
-def CennikAdd(nazwa, stage1, stage2, price1, price2):
+def cennik_add(nazwa, stage1, stage2, price1, price2):
     conn = GetConnection()
     c = conn.cursor()
     c.execute('''INSERT INTO cennik (nazwa, stage1, stage2, price1, price2) VALUES 
@@ -60,7 +59,7 @@ def CennikAdd(nazwa, stage1, stage2, price1, price2):
     conn.close()
 
 
-def CennikGet():
+def cennik_get():
     conn = GetConnection(True)
     c = conn.cursor()
 
@@ -71,7 +70,7 @@ def CennikGet():
     return data
 
 
-def CennikGetById(id):
+def cennik_get_by_id(id):
     conn = GetConnection(True)
     c = conn.cursor()
     c.execute(" SELECT cennik_id, nazwa, stage1, stage2, price1, price2 FROM cennik WHERE cennik_id = '%s'" % id)
@@ -81,7 +80,7 @@ def CennikGetById(id):
     return data
 
 
-def CennikUpdate(id, nazwa, stage1, stage2, price1, price2):
+def cennik_update(id, nazwa, stage1, stage2, price1, price2):
     conn = GetConnection(True)
     c = conn.cursor()
 
@@ -94,6 +93,7 @@ def CennikUpdate(id, nazwa, stage1, stage2, price1, price2):
 #
 #   Magazyn
 #
+
 
 def MagazynAdd(nazwa, typ, ean, rozmiar, price, wartosc):
     conn = GetConnection()

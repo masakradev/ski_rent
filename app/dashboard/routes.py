@@ -8,8 +8,9 @@ from app.dashboard import bp
 from app.dashboard.forms import WypozyczenieDodaj, WypozyczeniePozycja, EANSearch, WypozyczenieOddajDoplata
 from app.dashboard.models import Wypozyczenie, Podmiana
 
-from app.db.database import MagazynGetByEAN, WypozyczenieAdd, GetWypozyczeniaAktywne, GetWypozyczeniaWszystkie, GetAktywneWypoczyenieByEAN
-from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs, WypozyczenieOddajById, IndexCountsGet
+from app.db.database import MagazynGetByEAN, WypozyczenieAdd, GetWypozyczeniaAktywne
+from app.db.database import GetWypozyczeniaWszystkie, GetAktywneWypoczyenieByEAN, IndexCountsGet
+from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs, WypozyczenieOddajById
 
 from app.pdf.generator import create_pdf
 
@@ -21,16 +22,16 @@ def api_add():
     data = MagazynGetByEAN(ean)
 
     wyp.pozycje[ean] = {
-                    'nazwa': data['nazwa'],
-                    'rozmiar': data['rozmiar'],
-                    'ean': ean,
-                    'item_id':data['item_id'],
-                    'stage1': data['stage1'],
-                    'stage2': data['stage2'],
-                    'cena1': data['price1'],
-                    'cena2': data['price2'],
-                    'cena': 0
-                }
+        'nazwa': data['nazwa'],
+        'rozmiar': data['rozmiar'],
+        'ean': ean,
+        'item_id':data['item_id'],
+        'stage1': data['stage1'],
+        'stage2': data['stage2'],
+        'cena1': data['price1'],
+        'cena2': data['price2'],
+        'cena': 0
+        }
 
     Wypozyczenie.save(wyp)
     return jsonify('true')
@@ -66,7 +67,7 @@ def index():
     return render_template('index.html', data = data)
 
 
-@bp.route('/dodaj_wypozyczenie', methods=['POST','GET'])
+@bp.route('/dodaj_wypozyczenie', methods=['POST', 'GET'])
 def dodaj_wypozyczenie():
     form = WypozyczenieDodaj()
     wyp = Wypozyczenie.get()
@@ -90,7 +91,7 @@ def dodaj_wypozyczenie():
 
     return render_template('dodaj_wypozyczenie.html', form=form)
 
-@bp.route('/dodaj_wypozyczenie_dalej', methods=['POST','GET'])
+@bp.route('/dodaj_wypozyczenie_dalej', methods=['POST', 'GET'])
 def dodaj_wypozyczenie_dalej():
     form = WypozyczenieDodaj()
     wyp = Wypozyczenie.get()
@@ -108,9 +109,11 @@ def dodaj_wypozyczenie_dalej():
         form.wypozyczenie_od_godz.data = datetime.datetime.strptime(wyp.wypozyczenie_godz_od, '%H:%M')
 
 
-    days_compare = datetime.datetime.strptime(wyp.wypozyczenie_do, '%Y-%m-%d') - datetime.datetime.strptime(wyp.wypozyczenie_od, '%Y-%m-%d')
+    days_compare = datetime.datetime.strptime(wyp.wypozyczenie_do, '%Y-%m-%d') - \
+                   datetime.datetime.strptime(wyp.wypozyczenie_od, '%Y-%m-%d')
     days = days_compare.days
-    hours_compare = datetime.datetime.strptime(wyp.wypozyczenie_godz_do, '%H:%M') - datetime.datetime.strptime(wyp.wypozyczenie_godz_od, '%H:%M')
+    hours_compare = datetime.datetime.strptime(wyp.wypozyczenie_godz_do, '%H:%M') - \
+                    datetime.datetime.strptime(wyp.wypozyczenie_godz_od, '%H:%M')
     hours = int(hours_compare.seconds)/3600
 
     for k, i in wyp.pozycje.items():

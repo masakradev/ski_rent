@@ -1,10 +1,12 @@
-from flask import session, flash
 import pickle
 
-from app.db.database import GetWypozyczenieByID,MagazynGetByEAN, WypozyczeniePodmiana
+from flask import session, flash
+
+from app.db.database import GetWypozyczenieByID, MagazynGetByEAN, WypozyczeniePodmiana
 from app.dashboard.forms import WypozyczenieDodaj
 
 class Wypozyczenie:
+    "Model do towrzenia wypozyczen"
     session_key = 'pb_wypozyczenie'
 
     def __init__(self):
@@ -46,27 +48,27 @@ class Wypozyczenie:
 
     def update(self, form):
         if isinstance(form, WypozyczenieDodaj):
-            f = form.to_dict()
+            form_data = form.to_dict()
         else:
-            f = form
-        print(f)
-        self.klient_name = f['klient_nazwa']
-        self.klient_dowod = f['klient_dowod']
-        self.wypozyczenie_od = f['wypozyczenie_od']
-        self.wypozyczenie_do = f['wypozyczenie_do']
-        self.wypozyczenie_godz_od = f['wypozyczenie_od_godz']
-        self.wypozyczenie_godz_do = f['wypozyczenie_do_godz']
-        self.nr_tel = f['klient_nr_tel']
+            form_data = form
+        print(form_data)
+        self.klient_name = form_data['klient_nazwa']
+        self.klient_dowod = form_data['klient_dowod']
+        self.wypozyczenie_od = form_data['wypozyczenie_od']
+        self.wypozyczenie_do = form_data['wypozyczenie_do']
+        self.wypozyczenie_godz_od = form_data['wypozyczenie_od_godz']
+        self.wypozyczenie_godz_do = form_data['wypozyczenie_do_godz']
+        self.nr_tel = form_data['klient_nr_tel']
 
         try:
-            self.cena = f['cena']
+            self.cena = form_data['cena']
         except KeyError:
             self.cena = None
 
         pointer = 0
 
         while True:
-            key = f.getlist('pozycje_form-{}-key'.format(pointer))
+            key = form_data.getlist('pozycje_form-{}-key'.format(pointer))
             try:
                 key = key[0]
             except IndexError:
@@ -76,6 +78,7 @@ class Wypozyczenie:
 
 
 class Podmiana:
+    "Model do tworzenia podmian sprzetu"
     session_key = 'podmiana'
 
     def __init__(self, id):
@@ -120,7 +123,3 @@ class Podmiana:
     @staticmethod
     def clear():
         session.pop(Podmiana.session_key, None)
-
-
-
-

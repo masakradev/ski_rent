@@ -2,19 +2,20 @@ from flask import render_template, redirect, url_for, request, flash
 
 from app.admin import bp
 from app.admin.forms import CennikEdit, MagazynEdit
-from app.db.database import CennikGet, CennikGetById, CennikUpdate, CennikAdd, MagazynAdd, MagazynGet, MagazynGetById
-from app.db.database import MagazynUpdate
+from app.db.database import cennik_get, cennik_get_by_id, cennik_update, MagazynUpdate
+from app.db.database import cennik_add, MagazynAdd, MagazynGet, MagazynGetById
+
 
 
 
 @bp.route('/cennik')
 def cennik():
-    pozycje = CennikGet()
+    pozycje = cennik_get()
     return render_template('cennik.html', pozycje=pozycje)
 
-@bp.route('/cennik/edycja/<int:id>', methods=['POST','GET'])
+@bp.route('/cennik/edycja/<int:id>', methods=['POST', 'GET'])
 def cennik_edycja(id):
-    data = CennikGetById(id)
+    data = cennik_get_by_id(id)
     form = CennikEdit()
 
     form.nazwa.data = data['nazwa']
@@ -25,7 +26,7 @@ def cennik_edycja(id):
 
     if form.validate_on_submit():
 
-        CennikUpdate(
+        cennik_update(
             id,
             request.form['nazwa'],
             request.form['przedzial1'],
@@ -45,7 +46,7 @@ def cennik_dodaj():
 
     if form.validate_on_submit():
 
-        CennikAdd(
+        cennik_add(
             request.form['nazwa'],
             request.form['przedzial1'],
             request.form['przedzial2'],
@@ -64,9 +65,9 @@ def magazyn():
 
     return render_template('magazyn.html', pozycje=pozycje)
 
-@bp.route('/magazyn/dodaj', methods=['POST','GET'])
+@bp.route('/magazyn/dodaj', methods=['POST', 'GET'])
 def magazyn_dodaj():
-    cennik = CennikGet()
+    cennik = cennik_get()
     form = MagazynEdit()
 
     cennik_choices = [(i['cennik_id'], i['nazwa']) for i in cennik]
@@ -89,11 +90,11 @@ def magazyn_dodaj():
 
     return render_template('magazyn_form.html', form=form)
 
-@bp.route('/magazyn/edytuj/<int:id>', methods=['POST', 'GET'])
-def magazyn_edytuj(id):
-    cennik = CennikGet()
+@bp.route('/magazyn/edytuj/<item_id>', methods=['POST', 'GET'])
+def magazyn_edytuj(item_id):
+    cennik = cennik_get()
     form = MagazynEdit()
-    data = MagazynGetById(id)
+    data = MagazynGetById(item_id)
 
     cennik_choices = [(i['cennik_id'], i['nazwa']) for i in cennik]
     form.price.choices = cennik_choices
@@ -109,7 +110,7 @@ def magazyn_edytuj(id):
 
     if request.method == 'POST':
         MagazynUpdate(
-            id,
+            item_id,
             request.form['nazwa'],
             request.form['typ'],
             request.form['ean'],

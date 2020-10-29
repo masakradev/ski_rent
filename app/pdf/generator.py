@@ -1,3 +1,6 @@
+import os
+import json
+
 from reportlab.lib.pagesizes import A4, inch
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
@@ -13,8 +16,6 @@ from config import Config
 
 from app.db.database import GetWypozyczenieByID
 
-import os
-import json
 
 strings = {}
 
@@ -22,6 +23,7 @@ def get_pdf_data(id):
     return GetWypozyczenieByID(id)
 
 def generate_settings():
+    "Funkcja towrząca ustawiania gdyby ich nie było"
     settings = {"header1": "",
                 "header2": "",
                 "header3": "",
@@ -33,6 +35,7 @@ def generate_settings():
         json.dump(settings, file)
 
 def load_settings():
+    "Funkcja ładująca ustawienia do aplikacji"
     global strings
     try:
         with open('app/static/pdfSettings.json') as file:
@@ -44,6 +47,7 @@ def load_settings():
             strings = json.load(file)
 
 def create_logo_section(pdf):
+    "Funkcja tworząca logo PDF'a"
     logo = ImageReader(Config.logo)
     pdf.drawImage(logo, 50, 790 - 73.2, mask='auto', width=126.4, height=73.2)
 
@@ -54,6 +58,7 @@ def create_logo_section(pdf):
     pdf.drawString(52,790-73.2-35, strings['header3'])
 
 def create_header_section(pdf, data_od, client_name, client_id):
+    "Funkcja tworząca header PDF'a"
 
     header_string = "UMOWA WYPOŻYCZENIA SPRZĘTU"
     data_string = "Zawarta w dniu"
@@ -85,6 +90,7 @@ def create_header_section(pdf, data_od, client_name, client_id):
     pdf.drawString(200, 645, "Zwanym dalej 'Wypożyczającym'")
 
 def create_items_talbe(pdf, items):
+    "PDF Tabela z wypozyczonymi przedmiotami"
 
     pdf.setFont('AbhayaLibreB', 10)
     string = "&1"
@@ -96,8 +102,8 @@ def create_items_talbe(pdf, items):
 
     table_data = [["Przedmiot", "Wartość", "Cena"]]
 
-    for x in items:
-        table_data.append(x)
+    for item in items:
+        table_data.append(item)
 
     inch_s = 0.0104166666666665
     multiple = 0.23
@@ -110,8 +116,8 @@ def create_items_talbe(pdf, items):
     if 10 < len(table_data):
         offset -= len(table_data) * 4.8
 
-    t = Table(table_data, colWidths=[4.25 * inch, 1.25 * inch ,1.25 * inch], rowHeights=0.23 * inch)
-    t.setStyle(TableStyle(
+    item_table = Table(table_data, colWidths=[4.25 * inch, 1.25 * inch ,1.25 * inch], rowHeights=0.23 * inch)
+    item_table.setStyle(TableStyle(
                         [('FONT',(0,0),(-1,-1), 'AbhayaLibre', 10),
                         ('GRID', (0, 0), (1, -3), 1, colors.black),
                         ('INNERGRID', (0, 0), (-1, -1), 1, colors.black),
@@ -121,11 +127,12 @@ def create_items_talbe(pdf, items):
                         ]
                     ))
 
-    t.wrapOn(pdf, 800, 600)
-    t.drawOn(pdf, 50, 595 - offset)
+    item_table.wrapOn(pdf, 800, 600)
+    item_table.drawOn(pdf, 50, 595 - offset)
 
 
 def create_central_section(pdf, date_start, date_end, date_hours_start, date_hours_end, price):
+    "PDF sekcja centralna z regulaminem + cena oraz daty"
     pdf.setFont('AbhayaLibreB', 10)
     string = "&2"
     string_width = 595 / 2 - (stringWidth(string, 'AbhayaLibreB', 10) / 2)
@@ -155,8 +162,6 @@ def create_central_section(pdf, date_start, date_end, date_hours_start, date_hou
 
     pdf.drawString(string_width, 475 - 276 , string)
 
-    cena = "500zł"
-
     pdf.setFont('AbhayaLibre', 10)
     pdf.drawString(50, 460 - 276, "1.) Opłata za sprzęt w wyznaczonym okresie wynosi: %s" % price)
     pdf.drawString(50, 445 - 276, "2.) W przypadku niedotrzymania terminu oddania sprzętu, korzystający zostanie obciążony dodatkową kwotą")
@@ -174,6 +179,7 @@ def create_central_section(pdf, date_start, date_end, date_hours_start, date_hou
 
 
 def create_footer(pdf):
+    "PDF sekjcja z podpisami"
 
     styleText = ParagraphStyle(
         name='Normal',
@@ -181,22 +187,21 @@ def create_footer(pdf):
         fontSize=8,
     )
 
-
     pdf.rect(50, 10, 200, 70, fill=0)
     pdf.rect(345, 10, 200, 70, fill=0)
-    storyExample2 = []
-    frameExample2 = Frame(51, 9, 275, 70, showBoundary=0)
-    storyExample2.append(Paragraph("Przedstawiciel wypożyczalni", styleText))
-    frameExample2.addFromList(storyExample2, pdf)
+    owner_sign = []
+    owner_sign_frame = Frame(51, 9, 275, 70, showBoundary=0)
+    owner_sign.append(Paragraph("Przedstawiciel wypożyczalni", styleText))
+    owner_sign_frame.addFromList(owner_sign, pdf)
 
-    storyExample1 = []
-    frameExample1 = Frame(345, 9, 275, 70, showBoundary=0)
-    storyExample1.append(Paragraph("Klient", styleText))
-    frameExample1.addFromList(storyExample1, pdf)
-
+    client_sign = []
+    client_sign_frame = Frame(345, 9, 275, 70, showBoundary=0)
+    client_sign.append(Paragraph("Klient", styleText))
+    client_sign_frame.addFromList(client_sign, pdf)
 
 
 def create_pdf(wypozyczenie_id):
+    "Funkcja towrząca umowe wypożyczenia dla danego wypozyczenia"
     load_settings()
 
     data = get_pdf_data(wypozyczenie_id)
