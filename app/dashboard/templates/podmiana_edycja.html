@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Podmiana sprzętu / Edycja</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+      </div>
+    </div>
+  </div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body ">
+                <h4> Pozycje do oddania</h4>
+                {{ form.kod.label }}
+                {{ form.kod(class_="form-control", id="usun") }}
+                <br>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                        <th>EAN</th>
+                        <th>Nazwa</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for key,name in poz_minus.items() %}
+                    <tr>
+                      <td>{{ key }}</td>
+                      <td>{{ name }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body ">
+                <h4> Pozycje do wydania</h4>
+                {{ form.kod.label }}
+                {{ form.kod(class_="form-control", id="dodaj") }}
+                <br>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                        <th>EAN</th>
+                        <th>Nazwa</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for key,name in poz_add.items() %}
+                    <tr>
+                      <td>{{ key }}</td>
+                      <td>{{ name }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body ">
+                <h4> Informacje o wypożyczeniu:</h4>
+                <br>
+                <p> Imie i nazwisko : <b>{{ info.klient_name}}</b></p>
+                <p> Nr dowodu : <b>{{ info.klient_dowod }}</b></p>
+                <p> Cena : <b>{{ info.price }}</b></p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+        <div class="col-md-12">
+        <form method="POST">
+            <br>
+            {{ form.submit(value="Wykonaj", class_="btn btn-primary btn-sm") }}
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+$("#dodaj").change(function(){
+
+    var inputVal = document.getElementById("dodaj").value;
+      $.ajax({
+        url: '/podmiana/api/add',
+        type: 'POST',
+        data: inputVal,
+        success: function(html){
+            location.reload();
+        }
+    }).done(function (response) {
+
+      })
+
+});
+
+$("#usun").change(function(){
+
+    var inputVal = document.getElementById("usun").value;
+      $.ajax({
+        url: '/podmiana/api/rem',
+        type: 'POST',
+        data: inputVal,
+        success: function(html){
+            location.reload();
+        }
+    }).done(function (response) {
+
+      })
+
+});
+
+</script>
+{% endblock %}

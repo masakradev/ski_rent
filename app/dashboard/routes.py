@@ -5,10 +5,10 @@ from decimal import Decimal
 from flask import render_template, flash, redirect, url_for, request, jsonify, send_file
 
 from app.dashboard import bp
-from app.dashboard.forms import WypozyczenieDodaj, WypozyczeniePozycja, WypozyczenieOddaj, WypozyczenieOddajDoplata
-from app.dashboard.models import Wypozyczenie
+from app.dashboard.forms import WypozyczenieDodaj, WypozyczeniePozycja, EANSearch, WypozyczenieOddajDoplata
+from app.dashboard.models import Wypozyczenie, Podmiana
 
-from app.db.database import MagazynGetByEAN, WypozyczenieAdd, GetWypozyczeniaAktywne, GetWypozyczeniaWszystkie, GetWypoczyenieByEAN
+from app.db.database import MagazynGetByEAN, WypozyczenieAdd, GetWypozyczeniaAktywne, GetWypozyczeniaWszystkie, GetAktywneWypoczyenieByEAN
 from app.db.database import GetWypozyczenieByID, GetItemsPriceByEANs, WypozyczenieOddajById, IndexCountsGet
 
 from app.pdf.generator import create_pdf
@@ -168,10 +168,10 @@ def wypozyczenie(id):
 
 @bp.route('/oddanie_wypozyczenia', methods=['POST', 'GET'])
 def oddanie_wypozyczenia():
-    form = WypozyczenieOddaj()
+    form = EANSearch()
 
     if form.validate_on_submit():
-        data = GetWypoczyenieByEAN(form.kod.data)
+        data = GetAktywneWypoczyenieByEAN(form.kod.data)
         if data is None:
             flash("Nie ma takiego kodu lub brak wypożyczenia z takim przedmiotem")
         else:
@@ -237,3 +237,53 @@ def wypozyczenia_lista_aktywne():
 def wypozyczenia_lista_wszystkie():
     pozycje = GetWypozyczeniaWszystkie()
     return render_template('wypozyczenia_lista_wszystkie.html', pozycje=pozycje)
+
+#
+# Endpoint dla podimany
+#
+
+@bp.route('/podmiana/api/add', methods=['POST'])
+def podmiana_sprzetu_api_add():
+    pod = Podmiana.get(False)
+    ean = list(request.form.to_dict().keys())[0]
+
+    pod.add_poz(ean)
+    Podmiana.save(pod)
+    return jsonify(False)
+
+@bp.route('/podmiana/api/rem', methods=['POST'])
+def podmiana_sprzetu_api_rem():
+    pod = Podmiana.get(False)
+    ean = list(request.form.to_dict().keys())[0]
+
+    pod.remove_poz(ean)
+    Podmiana.save(pod)
+    return jsonify(False)
+#
+#  Podmiana
+#
+
+@bp.route('/podmiana', methods=['POST','GET'])
+def podmiana_sprzetu():
+    form = EANSearch()
+
+    if form.validate_on_submit():
+        data = GetAktywneWypoczyenieByEAN(form.kod.data)
+        if data is None:
+            flash("Nie ma takiego kodu lub brak wypożyczenia z takim przedmiotem")
+        else:
+            return redirect(url_for('dashboard.podmiana_sprzetu_edycja', id=data['wypozyczenie_id']))
+
+    return render_template('podmiana.html', form=form)
+
+@bp.route('/podmiana/edycja/<int:id>', methods=['POST','GET'])
+def podmiana_sprzetu_edycja(id):
+    pod = Podmiana.get(id)
+    form = EANSearch()
+
+    if request.method == 'POST':
+        pod.make_switch()
+        pod.clear()
+
+    Podmiana.save(pod)
+    return render_template('podmiana_edycja.html', form=form, poz_add=pod.pozycje_add, poz_minus=pod.pozycje_minus, info=pod.info)

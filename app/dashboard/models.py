@@ -1,6 +1,7 @@
-from flask import session
+from flask import session, flash
 import pickle
 
+from app.db.database import GetWypozyczenieByID,MagazynGetByEAN, WypozyczeniePodmiana
 from app.dashboard.forms import WypozyczenieDodaj
 
 class Wypozyczenie:
@@ -73,6 +74,52 @@ class Wypozyczenie:
 
             pointer += 1
 
+
+class Podmiana:
+    session_key = 'podmiana'
+
+    def __init__(self, id):
+        data = GetWypozyczenieByID(id)
+        self.pozycje = {x['ean']: x['nazwa'] for x in data['pozycje']}
+        self.pozycje_minus = {}
+        self.pozycje_add = {}
+        self.wypozyczenia_id = data['info']['wypozyczenie_id']
+        self.info = {
+            'klient_name': data['info']['klient_name'],
+            'klient_dowod': data['info']['klient_dowod'],
+            'price': data['info']['price']
+        }
+
+    def remove_poz(self, ean):
+        self.pozycje_minus[ean] = self.pozycje[ean]
+        #except IndexError:
+            #flash("Nie możesz usunąć pozycji która nie była w tym wypożyczeniu! ")
+
+    def add_poz(self, ean):
+        if ean in self.pozycje:
+            flash("Nie możesz dodać pozycji kóra już jest w tym wypożyczeniu")
+        data = MagazynGetByEAN(ean)
+        self.pozycje_add[ean] = data['nazwa']
+
+    def make_switch(self):
+        WypozyczeniePodmiana(self.pozycje_minus, self.pozycje_add, self.wypozyczenia_id)
+
+    @staticmethod
+    def get(id):
+        try:
+            return pickle.loads(session[Podmiana.session_key])
+        except KeyError:
+            if id:
+                return Podmiana(id)
+
+    @staticmethod
+    def save(obj):
+        session[Podmiana.session_key] = pickle.dumps(obj)
+        session.modified = True
+
+    @staticmethod
+    def clear():
+        session.pop(Podmiana.session_key, None)
 
 
 

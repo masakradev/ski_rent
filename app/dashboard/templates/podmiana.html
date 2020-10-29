@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Podmiana sprzętu</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+      </div>
+    </div>
+  </div>
+
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <div class="card">
+            <form method="post">
+                {{ form.csrf_token }}
+                  <div class="card-body ">
+                    <center><h5 class="card-title">Zeskanuj kod</h5></center>
+                        {{ form.kod.label }}
+                        {{ form.kod(class_="form-control") }}
+                        <br>
+                        <center>{{ form.submit(class_="btn btn-primary btn-sm") }}<center>
+                  </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

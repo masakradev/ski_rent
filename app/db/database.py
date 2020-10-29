@@ -213,7 +213,7 @@ def GetWypozyczeniaWszystkie():
     conn.close()
     return data
 
-def GetWypoczyenieByEAN(ean):
+def GetAktywneWypoczyenieByEAN(ean):
     conn = GetConnection(True)
     c = conn.cursor()
     c.execute("SELECT * FROM wypozyczeniaitemsactive WHERE ean = '%s'"% ean)
@@ -253,6 +253,28 @@ def GetWypozyczenieByID(id):
     data = c.fetchall()
     return_data['pozycje'] = data
     return return_data
+
+def WypozyczeniePodmiana(poz_rem, poz_add, id):
+    conn = GetConnection(True)
+    c = conn.cursor()
+
+    #poz_rem_in = ','.join(poz_rem.keys())
+    poz_add_in = ','.join(poz_add.keys())
+
+    poz = []
+    c.execute("SELECT * FROM  items WHERE ean IN (%s)"% poz_add_in)
+    data = c.fetchall()
+    for x in data:
+        temp = (x['item_id'], id, x['ean'], x['nazwa'], 0)
+        poz.append(temp)
+
+    for x in poz_rem.keys():
+        c.execute("DELETE FROM wypozyczeniaitemsactive WHERE ean = '%s'"% x)
+    #c.execute("DELETE FROM wypozyczeniaitemsactive WHERE ean IN (%s)"% poz_rem_in) IDK why not working
+    c.executemany('INSERT INTO wypozyczeniaitemsactive (item_id, wypozyczenie_id, ean, nazwa, cena) VALUES (?,?,?,?,?)', poz)
+
+    conn.commit()
+    conn.close()
 
 def GetItemsPriceByEANs(id):
     conn = GetConnection(True)

@@ -30,10 +30,14 @@ class WypozyczenieDodaj(FlaskForm):
     submit = SubmitField('Dalej')
 
 
-class WypozyczenieOddaj(FlaskForm):
+class EANSearch(FlaskForm):
     kod = StringField('Kod kreskowy')
-    submit = SubmitField('Oddaj')
+    submit = SubmitField('Szukaj')
 
 class WypozyczenieOddajDoplata(FlaskForm):
     doplata = IntegerField('Dopłata')
+    submit = SubmitField('Oddaj')
+
+class Podmiana(FlaskForm):
+    kod = StringField('Kod kreskowy')
     submit = SubmitField('Oddaj')
