@@ -101,6 +101,24 @@
                 </a>
               </li>
             </ul>
+
+            <hr>
+
+            <!-- Finanse -->
+
+            <ul class="nav flex-column">
+              <!-- MENU -->
+              <li class="nav-item">
+                <p style="margin-bottom: 0;" class="nav-link">Finanse</p>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.endpoint.startswith('finances.rozliczenia') %} active {% endif %}" href="{{ url_for('finances.rozliczenia')}}">
+                  <span data-feather="dollar-sign"></span>
+                  Rozliczenia
+                </a>
+              </li>
+            </ul>
+
           </div>
         </nav>
 
