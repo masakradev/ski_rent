@@ -108,13 +108,14 @@ def dodaj_wypozyczenie_dalej():
     if wyp.wypozyczenie_godz_od not in (None, ''):
         form.wypozyczenie_od_godz.data = datetime.datetime.strptime(wyp.wypozyczenie_godz_od, '%H:%M')
 
+    wyp_od = " ".join([wyp.wypozyczenie_od,wyp.wypozyczenie_godz_od])
+    wyp_do = " ".join([wyp.wypozyczenie_do,wyp.wypozyczenie_godz_do])
 
-    days_compare = datetime.datetime.strptime(wyp.wypozyczenie_do, '%Y-%m-%d') - \
-                   datetime.datetime.strptime(wyp.wypozyczenie_od, '%Y-%m-%d')
-    days = days_compare.days
-    hours_compare = datetime.datetime.strptime(wyp.wypozyczenie_godz_do, '%H:%M') - \
-                    datetime.datetime.strptime(wyp.wypozyczenie_godz_od, '%H:%M')
-    hours = int(hours_compare.seconds)/3600
+    days_compare = datetime.datetime.strptime(wyp_do, '%Y-%m-%d %H:%M') - \
+                   datetime.datetime.strptime(wyp_od, '%Y-%m-%d %H:%M')
+
+    wyp_count_days = int(days_compare.days)
+    wyp_count_hours = days_compare.seconds /3600
 
     for k, i in wyp.pozycje.items():
         poz = WypozyczeniePozycja()
@@ -122,11 +123,14 @@ def dodaj_wypozyczenie_dalej():
         poz.nazwa = i['nazwa']
         poz.ean = k
         poz.rozmiar = i['rozmiar']
-        #print(days * i['cena1'] + hours * i['cena2'])
-        if hours < i['stage2'] and hours > 0:
-            cena = days * i['cena2'] + hours * i['cena1']
+
+        if wyp_count_days > 0:
+            cena = wyp_count_days * i['cena2'] + wyp_count_hours * i['cena1']
         else:
-            cena = 20
+            if wyp_count_hours > i['stage2']:
+                cena = i['cena2']
+            else:
+                cena = wyp_count_hours * i['cena1']
 
         poz.cena = cena
         wyp.pozycje[k]['cena'] = cena
@@ -195,7 +199,7 @@ def oddanie_wypozyczenia_dalej(id):
     now = datetime.datetime.now()
 
     day_now = "%s-%s-%s %s:%s" % (now.year, now.month, now.day, now.hour, now.minute)
-    day_do = "%s %s" % (info['wypozyczenie_do'], info['wypozyczenie_godz_do'])
+    day_do = " ".join([info['wypozyczenie_do'], info['wypozyczenie_godz_do']])
 
     days_compare = datetime.datetime.strptime(day_now, '%Y-%m-%d %H:%M') - datetime.datetime.strptime(
         day_do, '%Y-%m-%d %H:%M')
@@ -226,7 +230,7 @@ def oddanie_wypozyczenia_dalej(id):
 
     if form.validate_on_submit():
         WypozyczenieOddajById(id, request.form.get('doplata'))
-        #return redirect(url_for('dashboard.index'))
+        return redirect(url_for('dashboard.index'))
 
     return render_template('oddanie_wypozyczenia_dalej.html', info=info, pozycje=pozycje, rozliczenie=ret, form=form)
 
@@ -242,7 +246,7 @@ def wypozyczenia_lista_wszystkie():
     return render_template('wypozyczenia_lista_wszystkie.html', pozycje=pozycje)
 
 #
-# Endpoint dla podimany
+# Endpoint dla podmiany
 #
 
 @bp.route('/podmiana/api/add', methods=['POST'])

@@ -24,7 +24,7 @@ class Wypozyczenie:
         price = 0
         for key, item in self.pozycje.items():
             price += item['cena']
-            print(item['cena'])
+            #print(item['cena'])
         self.cena = price
 
     def delete_from_pozycje(self, key):

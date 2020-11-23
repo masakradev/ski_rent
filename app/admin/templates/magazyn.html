@@ -30,7 +30,7 @@
           <td><a href="{{ url_for('admin.cennik_edycja', id=poz.cennik_id) }}">{{ poz.cennik_nazwa }}</a></td>
           <td>{{ poz.rozmiar }}</td>
           <td>
-            <a href="{{ url_for('admin.magazyn_edytuj', id=poz.item_id)}}" type="button" class="btn btn-primary btn-sm">Edytuj</a>
+            <a href="{{ url_for('admin.magazyn_edytuj', item_id=poz.item_id)}}" type="button" class="btn btn-primary btn-sm">Edytuj</a>
             <a type="button" class="btn btn-danger btn-sm">Usuń</a>
           </td>
         </tr>
