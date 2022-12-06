@@ -1,0 +1,12 @@
+venv
+.idea
+config.py
+config-*.py
+*.py[cod]
+__pycache__/
+*$py.class
+*.crt
+/config.py
+database.db
+/app/static/pdf/*.pdf
+/app/static/pdfSettings.json
